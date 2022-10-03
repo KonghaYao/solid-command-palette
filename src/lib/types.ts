@@ -66,17 +66,18 @@ export interface RootProps {
 }
 
 export interface StoreState {
-  visibility: Atom<boolean>;
   searchText: string;
   activeParentActionIdList: Array<ActionId>;
+  actionsContext: ActionsContext;
+  components?: Components;
+}
+export type ReactiveStore = {
+  visibility: Atom<boolean>;
   actions: Atom<Action[]>;
   resultsList: Atom<Action[]>;
 
   actionsMap: Atom<Actions>;
-  actionsContext: ActionsContext;
-  components?: Components;
-}
-
+};
 export type StoreStateWrapped = Store<StoreState>;
 
 export interface StoreMethods {
@@ -91,7 +92,7 @@ export interface StoreMethods {
   resetParentAction: () => void;
 }
 
-export type StoreContext = [StoreStateWrapped, StoreMethods];
+export type StoreContext = [StoreStateWrapped, StoreMethods, ReactiveStore];
 
 type CreateSyncActionsContextCallback = () => ActionContext;
 

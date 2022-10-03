@@ -1,5 +1,4 @@
-import { Component, createEffect, createSignal, createUniqueId, onMount, onCleanup, Setter } from 'solid-js';
-import tinykeys from 'tinykeys';
+import { Component, createEffect, createSignal, createUniqueId, onMount, onCleanup } from 'solid-js';
 import { useStore } from '../StoreContext';
 import { KbdShortcut } from '../KbdShortcut/KbdShortcut';
 import { ScrollAssist } from '../ScrollAssist/ScrollAssist';
@@ -9,15 +8,16 @@ import { runAction } from '../actionUtils/actionUtils';
 import { WrappedAction } from '../types';
 import utilStyles from '../utils.module.css';
 import styles from './CommandPalette.module.css';
-import { CommandPaletteProps, ActiveItemId, UserInteraction, InputEventHandler } from './CommandPalette';
-function triggerRun(action: WrappedAction) {
-  const [state, storeMethods] = useStore();
-  runAction(action, state.actionsContext, storeMethods);
-}
+import { CommandPaletteProps, ActiveItemId, UserInteraction } from './CommandPalette';
+import { BindCommandKey } from './BindCommandKey';
+
 export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
-  const [state, storeMethods] = useStore();
-  const { closePalette, setSearchText, revertParentAction } = storeMethods;
-  const resultsList = state.resultsList;
+  const [state, storeMethods, atoms] = useStore();
+  function triggerRun(action: WrappedAction) {
+    runAction(action, state.actionsContext, storeMethods);
+  }
+  const { closePalette, setSearchText } = storeMethods;
+  const resultsList = atoms.resultsList;
   const [activeItemId, setActiveItemId] = createSignal<ActiveItemId>(null);
   const [userInteraction, setUserInteraction] = createSignal<UserInteraction>('idle');
   const searchLabelId = createUniqueId();
@@ -43,26 +43,13 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
     setActiveItemId(prevActionId);
   }
 
-  function activatePrevItem() {
-    activateItemWith(-1);
-  }
-
-  function activateNextItem() {
-    activateItemWith(1);
-  }
-
-  function handleActionItemHover(action: WrappedAction) {
-    setUserInteraction('navigate-mouse');
-    setActiveItemId(action.id);
-  }
-
   function handleKbdEnter(event: KeyboardEvent) {
     event.preventDefault();
     const targetElem = event.target as HTMLElement;
     if (closeBtnElem && closeBtnElem.contains(targetElem)) return;
     const activeActionId = activeItemId();
     if (!activeActionId) return null;
-    const action = state.actionsMap()[activeActionId];
+    const action = atoms.actionsMap()[activeActionId];
     triggerRun(action);
   }
 
@@ -84,7 +71,7 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
       searchInputElem.select();
     }
 
-    if (wrapperElem) BindKey(wrapperElem, handleKbdEnter, activateItemWith, setUserInteraction, setActiveItemId);
+    if (wrapperElem) BindCommandKey(wrapperElem, handleKbdEnter, activateItemWith, setUserInteraction, setActiveItemId);
   });
 
   onCleanup(() => {
@@ -118,7 +105,7 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
           status={getScrollAssistStatus()}
           onNavigate={() => {
             setUserInteraction('navigate-scroll-assist');
-            activatePrevItem();
+            activateItemWith(-1);
           }}
           onStop={() => setUserInteraction('idle')}
         />
@@ -127,7 +114,7 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
           status={getScrollAssistStatus()}
           onNavigate={() => {
             setUserInteraction('navigate-scroll-assist');
-            activateNextItem();
+            activateItemWith(1);
           }}
           onStop={() => setUserInteraction('idle')}
         />
@@ -192,10 +179,13 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
           </form>
           <PanelResult
             activeItemId={activeItemId()}
-            resultsList={state.resultsList()}
+            resultsList={atoms.resultsList()}
             resultListId={resultListId}
             searchLabelId={searchLabelId}
-            onActionItemHover={handleActionItemHover}
+            onActionItemHover={(action: WrappedAction) => {
+              setUserInteraction('navigate-mouse');
+              setActiveItemId(action.id);
+            }}
             onActionItemSelect={(action) => triggerRun(action)}
           />
           <PanelFooter />
@@ -204,61 +194,3 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
     </div>
   );
 };
-
-/** 绑定面板的默认操作快捷键 */
-function BindKey(
-  wrapperElem: HTMLDivElement,
-  handleKbdEnter: (event: KeyboardEvent) => null | undefined,
-  activateItemWith: (len: number) => void,
-  setUserInteraction: Setter<UserInteraction>,
-  setActiveItemId: Setter<ActiveItemId>
-) {
-  const [state, storeMethods] = useStore();
-  const { closePalette, revertParentAction } = storeMethods;
-
-  tinykeys(wrapperElem, {
-    Escape: (event) => {
-      event.preventDefault();
-      closePalette();
-    },
-    Enter: handleKbdEnter,
-    ArrowUp(event: KeyboardEvent) {
-      event.preventDefault();
-      setUserInteraction('navigate-kbd');
-      activateItemWith(-1);
-    },
-    ArrowDown(event: KeyboardEvent) {
-      event.preventDefault();
-      setUserInteraction('navigate-kbd');
-      activateItemWith(1);
-    },
-    PageUp(event: KeyboardEvent) {
-      event.preventDefault();
-
-      const actionsList = state.resultsList();
-      const firstAction = actionsList[0];
-
-      if (firstAction) {
-        setUserInteraction('navigate-kbd');
-        setActiveItemId(firstAction.id);
-      }
-    },
-    PageDown(event: KeyboardEvent) {
-      event.preventDefault();
-
-      const actionsList = state.resultsList();
-      const lastAction = actionsList.at(-1);
-
-      if (lastAction) {
-        setUserInteraction('navigate-kbd');
-        setActiveItemId(lastAction.id);
-      }
-    },
-    Backspace() {
-      const isSearchEmpty = state.searchText.length <= 0;
-      if (isSearchEmpty) {
-        revertParentAction();
-      }
-    },
-  });
-}

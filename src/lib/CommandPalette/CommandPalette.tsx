@@ -16,7 +16,7 @@ export interface CommandPaletteProps {
 }
 
 export const CommandPalette: Component<CommandPaletteProps> = (p) => {
-  const [state] = useStore();
+  const [state, _, atoms] = useStore();
 
   return (
     <CommandPalettePortal mount={p.mount}>
@@ -26,7 +26,7 @@ export const CommandPalette: Component<CommandPaletteProps> = (p) => {
         exitClass={styles.animExit}
         exitActiveClass={styles.animExitActive}
       >
-        <Show when={state.visibility()}>
+        <Show when={atoms.visibility()}>
           <CommandPaletteInternal {...p} />
         </Show>
       </Transition>

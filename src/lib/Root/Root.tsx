@@ -3,8 +3,8 @@ import { createStore } from 'solid-js/store';
 import { createKbdShortcuts } from '../createKbdShortcuts';
 import { rootParentActionId } from '../constants';
 import { Provider } from '../StoreContext';
-import { RootProps, StoreState, StoreMethods } from '../types';
-import { atom, atomization } from '@cn-ui/use';
+import { RootProps, StoreState, StoreMethods, ReactiveStore } from '../types';
+import { atomization } from '@cn-ui/use';
 import { createSearchResultList } from '../createActionList';
 import { createStoreMethods } from './createStoreMethods';
 import { TransformActionsProp } from './TransformActionsProp';
@@ -19,24 +19,25 @@ export const Root: Component<RootProps> = (props) => {
   const visibility = atomization(props.visibility ?? false);
 
   const [store, setStore] = createStore<StoreState>({
-    visibility,
     searchText: '',
     activeParentActionIdList: [rootParentActionId],
-    ...TransformActionsProp(props),
     actionsContext: {
       root: initialActionsContext,
       dynamic: {},
     },
     components: props.components,
-    resultsList: atom([]),
   });
-  setStore('resultsList', () => createSearchResultList(store));
+  const actions = TransformActionsProp(props);
+  const atoms: ReactiveStore = {
+    visibility,
+    ...actions,
+    resultsList: createSearchResultList(store, actions.actions),
+  };
 
-  console.log(store.visibility, store.actions);
-  const storeMethods: StoreMethods = createStoreMethods(setStore, store);
+  const storeMethods: StoreMethods = createStoreMethods(setStore, store, atoms);
 
   return (
-    <Provider value={[store, storeMethods]}>
+    <Provider value={[store, storeMethods, atoms]}>
       <RootInternal />
       {props.children}
     </Provider>

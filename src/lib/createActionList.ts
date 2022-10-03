@@ -1,13 +1,13 @@
 import { createMemo, createEffect } from 'solid-js';
 import Fuse from 'fuse.js';
 import { checkActionAllowed, getActiveParentAction } from './actionUtils/actionUtils';
-import { StoreState, WrappedAction } from './types';
+import { Action, ReactiveStore, StoreState, WrappedAction } from './types';
 import { reflect } from '@cn-ui/use';
+import { Atom } from 'solid-use';
 
-export function createConditionalActionList(state: StoreState) {
+export function createConditionalActionList(state: StoreState, actions: Atom<Action[]>) {
   return createMemo(() => {
-    return state
-      .actions()
+    return actions()
       .filter((action: WrappedAction) => {
         const { activeId, isRoot } = getActiveParentAction(state.activeParentActionIdList);
         return isRoot || action.parentActionId === activeId;
@@ -16,8 +16,8 @@ export function createConditionalActionList(state: StoreState) {
   });
 }
 
-export function createSearchResultList(state: StoreState) {
-  const conditionalActionList = createConditionalActionList(state);
+export function createSearchResultList(store: StoreState, actions: Atom<Action[]>) {
+  const conditionalActionList = createConditionalActionList(store, actions);
 
   const fuse = new Fuse(conditionalActionList(), {
     keys: [
@@ -39,11 +39,11 @@ export function createSearchResultList(state: StoreState) {
     fuse.setCollection(conditionalActionList());
   });
   return reflect(() => {
-    if (state.searchText.length === 0) {
+    if (store.searchText.length === 0) {
       return conditionalActionList();
     }
 
-    const searchResults = fuse.search(state.searchText);
+    const searchResults = fuse.search(store.searchText);
 
     const resultsList = searchResults.map((result) => result.item);
     return resultsList;

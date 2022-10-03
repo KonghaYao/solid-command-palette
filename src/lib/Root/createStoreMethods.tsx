@@ -1,11 +1,15 @@
 import { produce, SetStoreFunction } from 'solid-js/store';
 import { getActiveParentAction } from '../actionUtils/actionUtils';
 import { rootParentActionId } from '../constants';
-import { StoreState, StoreMethods, DynamicContextMap } from '../types';
+import { StoreState, StoreMethods, DynamicContextMap, ReactiveStore } from '../types';
 import { Atom } from '@cn-ui/use';
 
 /** 创建整个信息管理的方法函数 */
-export function createStoreMethods(setStore: SetStoreFunction<StoreState>, store: StoreState): StoreMethods {
+export function createStoreMethods(
+  setStore: SetStoreFunction<StoreState>,
+  store: StoreState,
+  atoms: ReactiveStore
+): StoreMethods {
   const setSearchText = (newValue: string) => {
     setStore('searchText', newValue);
   };
@@ -28,10 +32,10 @@ export function createStoreMethods(setStore: SetStoreFunction<StoreState>, store
       );
     },
     openPalette() {
-      setStore('visibility', 'opened');
+      atoms.visibility(true);
     },
     closePalette() {
-      setStore('visibility', 'closed');
+      atoms.visibility(false);
 
       const hasActiveParent = store.activeParentActionIdList.length > 1;
 
@@ -41,10 +45,7 @@ export function createStoreMethods(setStore: SetStoreFunction<StoreState>, store
       }
     },
     togglePalette() {
-      setStore('visibility', (prev: Atom<boolean>) => {
-        prev((i) => !i);
-        return prev;
-      });
+      atoms.visibility((i) => !i);
     },
     selectParentAction(parentActionId) {
       if (parentActionId === rootParentActionId) {
