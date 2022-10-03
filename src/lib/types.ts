@@ -1,5 +1,5 @@
 import { Atom } from '@cn-ui/use';
-import { Component } from 'solid-js';
+import { Component, JSXElement } from 'solid-js';
 import { DeepReadonly, Store } from 'solid-js/store';
 
 export type ActionId = string;
@@ -62,6 +62,7 @@ export interface RootProps {
   actionsContext: ActionContext;
   components?: Components;
   visibility?: Atom<boolean>;
+  children?: JSXElement;
 }
 
 export interface StoreState {

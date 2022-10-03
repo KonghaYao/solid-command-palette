@@ -1,4 +1,4 @@
-export * from './Root';
+export * from './Root/Root';
 export * from './CommandPalette/CommandPalette';
 export * from './KbdShortcut/KbdShortcut';
 export * from './createSyncActionsContext';

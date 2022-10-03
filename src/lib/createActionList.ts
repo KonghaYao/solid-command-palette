@@ -2,10 +2,10 @@ import { createMemo, createEffect } from 'solid-js';
 import Fuse from 'fuse.js';
 import { checkActionAllowed, getActiveParentAction } from './actionUtils/actionUtils';
 import { StoreState, WrappedAction } from './types';
+import { reflect } from '@cn-ui/use';
 
 export function createConditionalActionList(state: StoreState) {
   return createMemo(() => {
-    console.log(state.actions());
     return state
       .actions()
       .filter((action: WrappedAction) => {
@@ -38,7 +38,7 @@ export function createSearchResultList(state: StoreState) {
   createEffect(() => {
     fuse.setCollection(conditionalActionList());
   });
-  return createMemo(() => {
+  return reflect(() => {
     if (state.searchText.length === 0) {
       return conditionalActionList();
     }

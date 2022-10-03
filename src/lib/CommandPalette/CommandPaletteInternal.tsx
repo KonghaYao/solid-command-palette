@@ -3,7 +3,7 @@ import tinykeys from 'tinykeys';
 import { useStore } from '../StoreContext';
 import { KbdShortcut } from '../KbdShortcut/KbdShortcut';
 import { ScrollAssist } from '../ScrollAssist/ScrollAssist';
-import { PanelResult } from '../Panel/Result/Result';
+import { PanelResult } from '../Panel/Result/PanelResult';
 import { PanelFooter } from '../Panel/Footer/Footer';
 import { runAction } from '../actionUtils/actionUtils';
 import { WrappedAction } from '../types';
@@ -51,33 +51,17 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
     activateItemWith(1);
   }
 
-  const handleSearchInput: InputEventHandler = (event) => {
-    const newValue = event.currentTarget.value;
-
-    setUserInteraction('search');
-    setSearchText(newValue);
-  };
-
   function handleActionItemHover(action: WrappedAction) {
     setUserInteraction('navigate-mouse');
     setActiveItemId(action.id);
   }
 
   function handleKbdEnter(event: KeyboardEvent) {
-    const targetElem = event.target as HTMLElement;
-
-    if (closeBtnElem && closeBtnElem.contains(targetElem)) {
-      return;
-    }
-
     event.preventDefault();
-
+    const targetElem = event.target as HTMLElement;
+    if (closeBtnElem && closeBtnElem.contains(targetElem)) return;
     const activeActionId = activeItemId();
-
-    if (!activeActionId) {
-      return null;
-    }
-
+    if (!activeActionId) return null;
     const action = state.actionsMap()[activeActionId];
     triggerRun(action);
   }
@@ -184,7 +168,12 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
               data-cp-kbd-shortcuts="disabled"
               ref={searchInputElem}
               value={state.searchText}
-              onInput={handleSearchInput}
+              onInput={(event) => {
+                const newValue = event.currentTarget.value;
+
+                setUserInteraction('search');
+                setSearchText(newValue);
+              }}
             />
             <button
               type="button"
@@ -203,7 +192,7 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
           </form>
           <PanelResult
             activeItemId={activeItemId()}
-            resultsList={resultsList()}
+            resultsList={state.resultsList()}
             resultListId={resultListId}
             searchLabelId={searchLabelId}
             onActionItemHover={handleActionItemHover}
@@ -215,6 +204,8 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
     </div>
   );
 };
+
+/** 绑定面板的默认操作快捷键 */
 function BindKey(
   wrapperElem: HTMLDivElement,
   handleKbdEnter: (event: KeyboardEvent) => null | undefined,

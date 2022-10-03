@@ -25,7 +25,7 @@ const Main: Component = () => {
   const actionsContext = {
     navigate,
   };
-
+  console.log(actions);
   return (
     <main class={styles.main}>
       <Show
