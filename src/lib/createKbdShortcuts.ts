@@ -4,22 +4,21 @@ import { useStore } from './StoreContext';
 import { createActionList } from './createActionList';
 import { getShortcutHandlersMap } from './actionUtils/actionUtils';
 
-type Unsubscribe = null | ReturnType<typeof tinykeys>;
+type Unsubscribe = ReturnType<typeof tinykeys>;
 
+/** 临时创建快捷键，在组件销毁时销毁 */
 export function createKbdShortcuts() {
   const [state, storeMethods] = useStore();
   const { togglePalette } = storeMethods;
+  const commandPaletteHandler = (event: KeyboardEvent) => {
+    event.preventDefault();
+    togglePalette();
+  };
+
   const actionsList = createActionList();
-
-  let unsubscribe: Unsubscribe = null;
-
+  let unsubscribe: Unsubscribe;
   onMount(() => {
     const shortcutMap = getShortcutHandlersMap(actionsList(), state.actionsContext, storeMethods);
-
-    const commandPaletteHandler = (event: KeyboardEvent) => {
-      event.preventDefault();
-      togglePalette();
-    };
 
     unsubscribe = tinykeys(window, {
       ...shortcutMap,

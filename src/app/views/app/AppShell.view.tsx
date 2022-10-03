@@ -1,5 +1,5 @@
 import { Component, Show } from 'solid-js';
-import { Link, NavLink, NavLinkProps, Outlet, useMatch, useNavigate } from 'solid-app-router';
+import { Link, NavLink, NavLinkProps, Outlet, useMatch, useNavigate } from '@solidjs/router';
 import { Root, CommandPalette } from '../../../lib';
 import { SocialIcon, socialsData } from './SocialIcons';
 import { actions } from './actions';

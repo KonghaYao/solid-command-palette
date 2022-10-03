@@ -1,3 +1,4 @@
+import { Atom } from '@cn-ui/use';
 import { Component } from 'solid-js';
 import { DeepReadonly, Store } from 'solid-js/store';
 
@@ -57,16 +58,18 @@ export interface Components {
 }
 
 export interface RootProps {
-  actions: Actions;
+  actions: Action[] | Atom<Action[]>;
   actionsContext: ActionContext;
   components?: Components;
+  visibility?: Atom<boolean>;
 }
 
 export interface StoreState {
-  visibility: 'opened' | 'closed';
+  visibility: Atom<boolean>;
   searchText: string;
   activeParentActionIdList: Array<ActionId>;
-  actions: Actions;
+  actions: Atom<Action[]>;
+  actionsMap: Atom<Actions>;
   actionsContext: ActionsContext;
   components?: Components;
 }
@@ -89,7 +92,4 @@ export type StoreContext = [StoreStateWrapped, StoreMethods];
 
 type CreateSyncActionsContextCallback = () => ActionContext;
 
-export type CreateSyncActionsContext = (
-  actionId: ActionId,
-  callback: CreateSyncActionsContextCallback
-) => void;
+export type CreateSyncActionsContext = (actionId: ActionId, callback: CreateSyncActionsContextCallback) => void;

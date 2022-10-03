@@ -1,5 +1,5 @@
 import { Component, lazy } from 'solid-js';
-import { RouteDefinition, useRoutes } from 'solid-app-router';
+import { RouteDefinition, useRoutes } from '@solidjs/router';
 import AppShellView from './views/app/AppShell.view';
 import DocsShellView from './views/docs/DocsShell/DocsShell.view';
 import DocsView from './views/docs/Docs.view';

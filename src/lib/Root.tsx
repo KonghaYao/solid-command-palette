@@ -1,43 +1,61 @@
-import { Component } from 'solid-js';
-import { createStore, produce } from 'solid-js/store';
+import { Component, JSXElement } from 'solid-js';
+import { createStore, produce, SetStoreFunction } from 'solid-js/store';
 import { createKbdShortcuts } from './createKbdShortcuts';
 import { getActiveParentAction } from './actionUtils/actionUtils';
 import { rootParentActionId } from './constants';
 import { Provider } from './StoreContext';
 import { RootProps, StoreState, StoreMethods, StoreContext, DynamicContextMap } from './types';
+import { Atom, atomization, reflect } from '@cn-ui/use';
 
 const RootInternal: Component = () => {
   createKbdShortcuts();
-
   return null;
 };
 
-export const Root: Component<RootProps> = (p) => {
-  const initialActions = p.actions || {};
-  const initialActionsContext = p.actionsContext || {};
+export const Root: Component<RootProps & { children?: JSXElement }> = (props) => {
+  const initialActions = atomization(props.actions);
+  const initialActionsContext = props.actionsContext || {};
+  const visibility = atomization(props.visibility ?? false);
 
-  const [state, setState] = createStore<StoreState>({
-    visibility: 'closed',
+  const [store, setStore] = createStore<StoreState>({
+    visibility,
     searchText: '',
     activeParentActionIdList: [rootParentActionId],
     actions: initialActions,
+    actionsMap: reflect(() => Object.fromEntries(initialActions().map((i) => [i.id, i]))),
     actionsContext: {
       root: initialActionsContext,
       dynamic: {},
     },
-    components: p.components,
+    components: props.components,
   });
 
-  const storeMethods: StoreMethods = {
-    setSearchText(newValue) {
-      setState('searchText', newValue);
-    },
+  const storeMethods: StoreMethods = createStoreMethods(setStore, store);
+
+  return (
+    <Provider value={[store, storeMethods]}>
+      <RootInternal />
+      {props.children}
+    </Provider>
+  );
+};
+
+/** 创建整个信息管理的方法函数 */
+function createStoreMethods(setStore: SetStoreFunction<StoreState>, store: StoreState): StoreMethods {
+  const setSearchText = (newValue: string) => {
+    setStore('searchText', newValue);
+  };
+  const resetParentAction = () => {
+    setStore('activeParentActionIdList', [rootParentActionId]);
+  };
+  return {
+    resetParentAction,
+    setSearchText,
     setActionsContext(actionId, newData) {
-      // @ts-expect-error need to figure out nested store setters.
-      setState('actionsContext', 'dynamic', actionId, newData);
+      setStore('actionsContext', 'dynamic', actionId, newData);
     },
     resetActionsContext(actionId) {
-      setState(
+      setStore(
         'actionsContext',
         'dynamic',
         produce<DynamicContextMap>((dynamicContext) => {
@@ -46,33 +64,36 @@ export const Root: Component<RootProps> = (p) => {
       );
     },
     openPalette() {
-      setState('visibility', 'opened');
+      setStore('visibility', 'opened');
     },
     closePalette() {
-      setState('visibility', 'closed');
+      setStore('visibility', 'closed');
 
-      const hasActiveParent = state.activeParentActionIdList.length > 1;
+      const hasActiveParent = store.activeParentActionIdList.length > 1;
 
       if (hasActiveParent) {
-        storeMethods.setSearchText('');
-        storeMethods.resetParentAction();
+        setSearchText('');
+        resetParentAction();
       }
     },
     togglePalette() {
-      setState('visibility', (prev) => (prev === 'opened' ? 'closed' : 'opened'));
+      setStore('visibility', (prev: Atom<boolean>) => {
+        prev((i) => !i);
+        return prev;
+      });
     },
     selectParentAction(parentActionId) {
       if (parentActionId === rootParentActionId) {
         return;
       }
 
-      setState('activeParentActionIdList', (old) => {
+      setStore('activeParentActionIdList', (old) => {
         return [...old, parentActionId];
       });
-      storeMethods.setSearchText('');
+      setSearchText('');
     },
     revertParentAction() {
-      setState('activeParentActionIdList', (old) => {
+      setStore('activeParentActionIdList', (old) => {
         const { isRoot } = getActiveParentAction(old);
         if (isRoot) {
           return old;
@@ -84,17 +105,5 @@ export const Root: Component<RootProps> = (p) => {
         return copiedList;
       });
     },
-    resetParentAction() {
-      setState('activeParentActionIdList', [rootParentActionId]);
-    },
   };
-
-  const store: StoreContext = [state, storeMethods];
-
-  return (
-    <Provider value={store}>
-      <RootInternal />
-      {p.children}
-    </Provider>
-  );
-};
+}

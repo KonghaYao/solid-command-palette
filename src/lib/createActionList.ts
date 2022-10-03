@@ -4,50 +4,25 @@ import { useStore } from './StoreContext';
 import { checkActionAllowed, getActiveParentAction } from './actionUtils/actionUtils';
 import { WrappedAction } from './types';
 
-export function createActionList() {
-  const [state] = useStore();
-
-  const actionsList = createMemo(() => {
-    return Object.values(state.actions);
-  });
-
-  return actionsList;
-}
-
 export function createNestedActionList() {
-  const actionsList = createActionList();
   const [state] = useStore();
+  const actionsList = state.actions;
 
-  function nestedActionFilter(action: WrappedAction) {
-    const { activeId, isRoot } = getActiveParentAction(state.activeParentActionIdList);
-
-    const isAllowed = isRoot || action.parentActionId === activeId;
-    return isAllowed;
-  }
-
-  const nestedActionsList = createMemo(() => {
-    const nestedActionsList = actionsList().filter(nestedActionFilter);
-    return nestedActionsList;
+  return createMemo(() => {
+    return actionsList().filter((action: WrappedAction) => {
+      const { activeId, isRoot } = getActiveParentAction(state.activeParentActionIdList);
+      return isRoot || action.parentActionId === activeId;
+    });
   });
-
-  return nestedActionsList;
 }
 
 export function createConditionalActionList() {
   const [state] = useStore();
   const nestedActionsList = createNestedActionList();
 
-  function conditionalActionFilter(action: WrappedAction) {
-    const isAllowed = checkActionAllowed(action, state.actionsContext);
-    return isAllowed;
-  }
-
-  const conditionalActionList = createMemo(() => {
-    const conditionalActionList = nestedActionsList().filter(conditionalActionFilter);
-    return conditionalActionList;
+  return createMemo(() => {
+    return nestedActionsList().filter((action) => checkActionAllowed(action, state.actionsContext));
   });
-
-  return conditionalActionList;
 }
 
 export function createSearchResultList() {
@@ -70,8 +45,10 @@ export function createSearchResultList() {
       },
     ],
   });
-
-  const resultsList = createMemo(() => {
+  createEffect(() => {
+    fuse.setCollection(conditionalActionList());
+  });
+  return createMemo(() => {
     if (state.searchText.length === 0) {
       return conditionalActionList();
     }
@@ -81,10 +58,4 @@ export function createSearchResultList() {
     const resultsList = searchResults.map((result) => result.item);
     return resultsList;
   });
-
-  createEffect(() => {
-    fuse.setCollection(conditionalActionList());
-  });
-
-  return resultsList;
 }

@@ -1,27 +1,17 @@
-import { Component, createRenderEffect, onCleanup } from 'solid-js';
+import { Component, createRenderEffect, JSXElement, onCleanup } from 'solid-js';
 import { Portal } from 'solid-js/web';
 
-type PortalElem = undefined | HTMLDivElement;
-
-export const CommandPalettePortal: Component = (p) => {
-  let portalElem: PortalElem;
-
+/** 将 Command Palette 构建到指定的 DOM 内部 */
+export const CommandPalettePortal: Component<{ children?: JSXElement; mount?: HTMLElement }> = (p) => {
+  let parent: HTMLElement = p.mount ?? document.body;
+  const portalElem = document.createElement('div');
+  portalElem.classList.add('command-palette-portal');
   createRenderEffect(() => {
-    if (portalElem) {
-      return;
-    }
-
-    const parent = document.body;
-    const newPortalElem = document.createElement('div');
-    newPortalElem.classList.add('command-palette-portal');
-    parent.appendChild(newPortalElem);
-    portalElem = newPortalElem;
+    parent.appendChild(portalElem);
   });
-
   onCleanup(() => {
     if (portalElem) {
       portalElem.remove();
-      portalElem = undefined;
     }
   });
 

@@ -17,22 +17,16 @@ function getActionContext(action: WrappedAction, actionsContext: ActionsContext)
   };
 }
 
+/** 通过 action.cond 判断是否被忽略  */
 export function checkActionAllowed(action: WrappedAction, actionsContext: ActionsContext) {
   if (!action.cond) {
     return true;
   }
-
   const { rootContext, dynamicContext } = getActionContext(action, actionsContext);
-
-  const isAllowed = action.cond({ actionId: action.id, rootContext, dynamicContext });
-  return isAllowed;
+  return action.cond({ actionId: action.id, rootContext, dynamicContext });
 }
 
-export function runAction(
-  action: WrappedAction,
-  actionsContext: ActionsContext,
-  storeMethods: RunStoreMethods
-) {
+export function runAction(action: WrappedAction, actionsContext: ActionsContext, storeMethods: RunStoreMethods) {
   const { id, run } = action;
 
   if (!run) {
@@ -45,11 +39,7 @@ export function runAction(
   storeMethods.closePalette();
 }
 
-export function getShortcutHandlersMap(
-  actionsList: WrappedActionList,
-  actionsContext: ActionsContext,
-  storeMethods: StoreMethods
-) {
+export function getShortcutHandlersMap(actionsList: WrappedActionList, actionsContext: ActionsContext, storeMethods: StoreMethods) {
   const shortcutMap: KeyBindingMap = {};
 
   actionsList.forEach((action) => {
