@@ -12,6 +12,7 @@ export type UserInteraction = 'idle' | 'search' | 'navigate-kbd' | 'navigate-mou
 
 export interface CommandPaletteProps {
   searchPlaceholder?: string;
+  footnote?: string;
   mount?: HTMLElement;
 }
 

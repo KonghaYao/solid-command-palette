@@ -61,27 +61,26 @@ export interface RootProps {
   actions: Atom<Action[]> | Atom<Actions> | Action[] | Actions;
   actionsContext: ActionContext;
   components?: Components;
-  visibility?: Atom<boolean>;
+  visibility?: boolean | Atom<boolean>;
+  searchText?: string | Atom<string>;
   children?: JSXElement;
 }
 
 export interface StoreState {
-  searchText: string;
   activeParentActionIdList: Array<ActionId>;
   actionsContext: ActionsContext;
   components?: Components;
 }
 export type ReactiveStore = {
+  searchText: Atom<string>;
   visibility: Atom<boolean>;
   actions: Atom<Action[]>;
   resultsList: Atom<Action[]>;
-
   actionsMap: Atom<Actions>;
 };
 export type StoreStateWrapped = Store<StoreState>;
 
 export interface StoreMethods {
-  setSearchText: (newValue: string) => void;
   setActionsContext: (actionId: ActionId, newData: ActionContext) => void;
   resetActionsContext: (actionId: ActionId) => void;
   openPalette: () => void;

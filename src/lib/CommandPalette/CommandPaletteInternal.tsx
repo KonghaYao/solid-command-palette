@@ -10,39 +10,47 @@ import utilStyles from '../utils.module.css';
 import styles from './CommandPalette.module.css';
 import { CommandPaletteProps, ActiveItemId, UserInteraction } from './CommandPalette';
 import { BindCommandKey } from './BindCommandKey';
+import { atom } from 'solid-use';
 
 export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
   const [state, storeMethods, atoms] = useStore();
-  function triggerRun(action: WrappedAction) {
-    runAction(action, state.actionsContext, storeMethods);
-  }
-  const { closePalette, setSearchText } = storeMethods;
-  const resultsList = atoms.resultsList;
-  const [activeItemId, setActiveItemId] = createSignal<ActiveItemId>(null);
-  const [userInteraction, setUserInteraction] = createSignal<UserInteraction>('idle');
+
+  const { closePalette } = storeMethods;
+
+  const activeItemId = atom<ActiveItemId>(atoms.actions()[0]?.id || null);
+  const userInteraction = atom<UserInteraction>('idle');
   const searchLabelId = createUniqueId();
   const searchInputId = createUniqueId();
   const resultListId = createUniqueId();
 
+  /** 触发 action  */
+  function triggerRun(action: WrappedAction) {
+    runAction(action, state.actionsContext, storeMethods);
+  }
   let wrapperElem: undefined | HTMLDivElement;
   let searchInputElem: undefined | HTMLInputElement;
   let closeBtnElem: undefined | HTMLButtonElement;
   let lastFocusedElem: null | HTMLElement;
 
-  /** 相对位置选中菜单，正数 next */
+  /**
+   * @zh 使用相对位置选中菜单
+   */
   function activateItemWith(length: number) {
-    const actionsList = resultsList();
-    const currentActionIndex = actionsList.findIndex((action) => action.id === activeItemId());
+    const actionsList = atoms.actions();
+    const active = activeItemId();
+    const currentActionIndex = actionsList.findIndex((action) => action.id === active);
+
     if (currentActionIndex < 0) {
       return;
     }
 
     const actionsCount = actionsList.length;
-    const prevActionIndex = (actionsCount + currentActionIndex + length) % actionsCount;
-    const prevActionId = actionsList[prevActionIndex].id;
-    setActiveItemId(prevActionId);
+    const newActionIndex = (actionsCount + currentActionIndex + length) % actionsCount;
+    const newActionId = actionsList[newActionIndex].id;
+    activeItemId(newActionId);
   }
 
+  /** @zh 处理键盘的 enter 事件 */
   function handleKbdEnter(event: KeyboardEvent) {
     event.preventDefault();
     const targetElem = event.target as HTMLElement;
@@ -71,7 +79,7 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
       searchInputElem.select();
     }
 
-    if (wrapperElem) BindCommandKey(wrapperElem, handleKbdEnter, activateItemWith, setUserInteraction, setActiveItemId);
+    if (wrapperElem) BindCommandKey(wrapperElem, handleKbdEnter, activateItemWith, userInteraction, activeItemId);
   });
 
   onCleanup(() => {
@@ -80,17 +88,6 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
     }
 
     lastFocusedElem = null;
-  });
-
-  createEffect(() => {
-    const actionsList = resultsList();
-    const firstResultId = actionsList[0]?.id;
-
-    if (firstResultId) {
-      setActiveItemId(firstResultId);
-    } else {
-      setActiveItemId(null);
-    }
   });
 
   return (
@@ -104,19 +101,19 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
           direction="up"
           status={getScrollAssistStatus()}
           onNavigate={() => {
-            setUserInteraction('navigate-scroll-assist');
+            userInteraction('navigate-scroll-assist');
             activateItemWith(-1);
           }}
-          onStop={() => setUserInteraction('idle')}
+          onStop={() => userInteraction('idle')}
         />
         <ScrollAssist
           direction="down"
           status={getScrollAssistStatus()}
           onNavigate={() => {
-            setUserInteraction('navigate-scroll-assist');
+            userInteraction('navigate-scroll-assist');
             activateItemWith(1);
           }}
-          onStop={() => setUserInteraction('idle')}
+          onStop={() => userInteraction('idle')}
         />
         <div
           role="combobox"
@@ -132,16 +129,14 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
             role="search"
             class={styles.searchForm}
             noValidate
-            onSubmit={(event) => {
-              event.preventDefault();
-            }}
+            onSubmit={(event) => event.preventDefault()}
           >
             <label
               for={searchInputId}
               id={searchLabelId}
               class={utilStyles.visuallyHidden}
             >
-              Search for an action and then select one of the option.
+              {p.footnote || 'Search for an action and then select one of the option.'}
             </label>
             <input
               type="search"
@@ -154,12 +149,12 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
               placeholder={p.searchPlaceholder || 'Type a command or search...'}
               data-cp-kbd-shortcuts="disabled"
               ref={searchInputElem}
-              value={state.searchText}
+              value={atoms.searchText()}
               onInput={(event) => {
                 const newValue = event.currentTarget.value;
 
-                setUserInteraction('search');
-                setSearchText(newValue);
+                userInteraction('search');
+                atoms.searchText(newValue);
               }}
             />
             <button
@@ -183,8 +178,8 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
             resultListId={resultListId}
             searchLabelId={searchLabelId}
             onActionItemHover={(action: WrappedAction) => {
-              setUserInteraction('navigate-mouse');
-              setActiveItemId(action.id);
+              userInteraction('navigate-mouse');
+              activeItemId(action.id);
             }}
             onActionItemSelect={(action) => triggerRun(action)}
           />

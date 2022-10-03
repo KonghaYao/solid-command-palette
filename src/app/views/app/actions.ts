@@ -41,11 +41,7 @@ const githubAction = defineAction({
   keywords: ['oss', 'source', 'code'],
   shortcut: 'g h',
   run: () => {
-    window.open(
-      'https://github.com/itaditya/solid-command-palette',
-      '_blank',
-      'noopener noreferrer'
-    );
+    window.open('https://github.com/KonghaYao/solid-command-palette', '_blank', 'noopener noreferrer');
   },
 });
 
@@ -55,11 +51,7 @@ const npmAction = defineAction({
   keywords: ['oss', 'package', 'pkg'],
   shortcut: 'g n',
   run: () => {
-    window.open(
-      'https://www.npmjs.com/package/solid-command-palette',
-      '_blank',
-      'noopener noreferrer'
-    );
+    window.open('https://www.npmjs.com/package/solid-command-palette', '_blank', 'noopener noreferrer');
   },
 });
 

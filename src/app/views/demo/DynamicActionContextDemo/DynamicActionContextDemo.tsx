@@ -18,7 +18,7 @@ const ContactItem: Component<ContactItemProps> = (p) => {
     >
       <label
         class={styles.contactLabel}
-        htmlFor={inputId}
+        for={inputId}
       >
         {p.contactData.label}
       </label>
@@ -81,16 +81,13 @@ export const DynamicActionContextDemo: Component = () => {
         <p>
           When you select Andrew or Tobey, the <strong>ReceiverContactDetails</strong> is rendered.
         </p>
-        <p>
-          While this component is rendered, the profile details are shared using dynamic action
-          context.
-        </p>
+        <p>While this component is rendered, the profile details are shared using dynamic action context.</p>
         <p>
           Try the <strong>Send Message to Contact</strong> action once after selecting each profile.
         </p>
         <p>
-          If you have Andrew's or Tobey's profile already opened, their contact id will already be
-          taken and you'll skip one step.
+          If you have Andrew's or Tobey's profile already opened, their contact id will already be taken and you'll skip
+          one step.
         </p>
       </div>
       <div class={demoStyles.demoInteraction}>

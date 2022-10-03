@@ -1,5 +1,5 @@
 # Core Library
-npm install solid-command-palette
+npm install @cn-ui/command-palette
 
 # Peer Dependencies
 npm install solid-transition-group tinykeys fuse.js

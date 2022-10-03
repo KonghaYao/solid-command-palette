@@ -1,4 +1,4 @@
-import { Component, createEffect } from 'solid-js';
+import { Component, createEffect, createMemo } from 'solid-js';
 import { useStore } from '../../StoreContext';
 import { WrappedAction } from '../../types';
 import { Dynamic } from 'solid-js/web';
@@ -12,7 +12,7 @@ export const ResultItem: Component<ResultItemProps> = (p) => {
   const [state] = useStore();
   const ResultContentComponent = state.components?.ResultContent || ResultContent;
 
-  const isActive = () => p.action.id === p.activeItemId;
+  const isActive = createMemo(() => p.action.id === p.activeItemId);
 
   function handleMouseMove(action: WrappedAction) {
     if (isMoving) return;

@@ -6,5 +6,6 @@
     "esModuleInterop": true,
     "types": ["node"]
   },
-  "include": ["./scripts"]
+  "include": ["./src", "./scripts", "./src/app"],
+  "exclude": ["./src/**/*.test.*"]
 }

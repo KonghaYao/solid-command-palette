@@ -1,4 +1,4 @@
-import { Component, Suspense } from 'solid-js';
+import { Component, Show, Suspense } from 'solid-js';
 import { NavLink, NavLinkProps, Outlet, useIsRouting } from '@solidjs/router';
 import { Loader } from '../../../shared/Loader/Loader';
 import styles from './DocsShell.module.css';

@@ -9,7 +9,7 @@ export function useStore() {
   const store = useContext(storeContext);
 
   if (!store) {
-    throw new Error('Please use it inside Root component');
+    throw new Error('Command Palette: Please use it inside Root component');
   }
 
   return store;

@@ -1,6 +1,6 @@
 {
-  "name": "solid-command-palette",
-  "version": "1.0.0",
+  "name": "@cn-ui/command-palette",
+  "version": "2.0.0",
   "description": "Add a command palette to your Solid.js App",
   "info": "Boost your users productivity 10x by integrating our command palette.",
   "main": "./pkg-dist/solid-command-palette.cjs.js",
@@ -68,6 +68,11 @@
       "name": "Aditya Agarwal",
       "email": "adityaa803@gmail.com",
       "url": "https://devadi.netlify.app"
+    },
+    {
+      "name": "KongHaYao",
+      "email": "dongzhongzhidong@qq.com",
+      "url": "https://github.com/KonghaYao"
     }
   ],
   "keywords": [

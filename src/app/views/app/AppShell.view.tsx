@@ -102,6 +102,15 @@ const AppShellView: Component = () => {
         >
           Aditya Agarwal
         </a>
+        <span>Refractor by</span>
+        <a
+          class={styles.creditLink}
+          href="https://github.com/KonghaYao"
+          rel="noopener"
+          target="_blank"
+        >
+          KongHaYao
+        </a>
       </footer>
     </section>
   );

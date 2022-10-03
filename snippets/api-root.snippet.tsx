@@ -1,4 +1,4 @@
-import { Root } from 'solid-command-palette';
+import { Root } from '@cn-ui/command-palette';
 
 <Root
   /* map of all actions */
@@ -6,17 +6,15 @@ import { Root } from 'solid-command-palette';
     [myAction.id]: myAction,
     /* ... other actions ... */
   }}
-
   /* share App's signals and methods with actions */
   actionsContext={{
     count,
     incrementCount,
     deleteMessage,
   }}
-
   /* Custom components to render in palette */
   components={{
     /* content for action in search result list */
     ResultContent,
   }}
-/>
+/>;

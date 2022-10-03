@@ -10,15 +10,12 @@ export function createStoreMethods(
   store: StoreState,
   atoms: ReactiveStore
 ): StoreMethods {
-  const setSearchText = (newValue: string) => {
-    setStore('searchText', newValue);
-  };
   const resetParentAction = () => {
     setStore('activeParentActionIdList', [rootParentActionId]);
   };
   return {
     resetParentAction,
-    setSearchText,
+
     setActionsContext(actionId, newData) {
       setStore('actionsContext', 'dynamic', actionId, newData);
     },
@@ -40,7 +37,7 @@ export function createStoreMethods(
       const hasActiveParent = store.activeParentActionIdList.length > 1;
 
       if (hasActiveParent) {
-        setSearchText('');
+        atoms.searchText('');
         resetParentAction();
       }
     },
@@ -55,7 +52,7 @@ export function createStoreMethods(
       setStore('activeParentActionIdList', (old) => {
         return [...old, parentActionId];
       });
-      setSearchText('');
+      atoms.searchText('');
     },
     revertParentAction() {
       setStore('activeParentActionIdList', (old) => {

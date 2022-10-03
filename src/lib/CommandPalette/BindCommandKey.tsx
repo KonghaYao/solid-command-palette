@@ -1,17 +1,20 @@
+import { Atom } from '@cn-ui/use';
 import { Setter } from 'solid-js';
 import tinykeys from 'tinykeys';
 import { useStore } from '../StoreContext';
 import { ActiveItemId, UserInteraction } from './CommandPalette';
 
-/** 绑定面板的默认操作快捷键 */
+/**
+ * @zh 绑定面板的默认操作快捷键
+ */
 export function BindCommandKey(
   wrapperElem: HTMLDivElement,
   handleKbdEnter: (event: KeyboardEvent) => null | undefined,
   activateItemWith: (len: number) => void,
-  setUserInteraction: Setter<UserInteraction>,
-  setActiveItemId: Setter<ActiveItemId>
+  userInteraction: Atom<UserInteraction>,
+  activeItemId: Atom<ActiveItemId>
 ) {
-  const [state, storeMethods] = useStore();
+  const [state, storeMethods, atoms] = useStore();
   const { closePalette, revertParentAction } = storeMethods;
 
   tinykeys(wrapperElem, {
@@ -22,38 +25,38 @@ export function BindCommandKey(
     Enter: handleKbdEnter,
     ArrowUp(event: KeyboardEvent) {
       event.preventDefault();
-      setUserInteraction('navigate-kbd');
+      userInteraction('navigate-kbd');
       activateItemWith(-1);
     },
     ArrowDown(event: KeyboardEvent) {
       event.preventDefault();
-      setUserInteraction('navigate-kbd');
+      userInteraction('navigate-kbd');
       activateItemWith(1);
     },
     PageUp(event: KeyboardEvent) {
       event.preventDefault();
 
-      const actionsList = state.resultsList();
+      const actionsList = atoms.resultsList();
       const firstAction = actionsList[0];
 
       if (firstAction) {
-        setUserInteraction('navigate-kbd');
-        setActiveItemId(firstAction.id);
+        userInteraction('navigate-kbd');
+        activeItemId(firstAction.id);
       }
     },
     PageDown(event: KeyboardEvent) {
       event.preventDefault();
 
-      const actionsList = state.resultsList();
+      const actionsList = atoms.resultsList();
       const lastAction = actionsList.at(-1);
 
       if (lastAction) {
-        setUserInteraction('navigate-kbd');
-        setActiveItemId(lastAction.id);
+        userInteraction('navigate-kbd');
+        activeItemId(lastAction.id);
       }
     },
     Backspace() {
-      const isSearchEmpty = state.searchText.length <= 0;
+      const isSearchEmpty = atoms.searchText().length <= 0;
       if (isSearchEmpty) {
         revertParentAction();
       }

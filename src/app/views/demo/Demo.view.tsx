@@ -36,7 +36,7 @@ const DemoView: Component = () => {
   };
 
   const getCustomProps = () => {
-    const features = searchParams.feat || [];
+    const features = searchParams.feat || ([] as string[]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const props: Record<string, any> = {};
@@ -82,7 +82,8 @@ const DemoView: Component = () => {
           <div>
             <h3 class={utilStyles.stripSpace}>Controlling application state</h3>
             <p>
-              We have a <strong>count</strong> signal and an <strong>increment</strong> function to increase its value by 1.
+              We have a <strong>count</strong> signal and an <strong>increment</strong> function to increase its value
+              by 1.
             </p>
             <p>You can trigger it by clicking on the button below it.</p>
             <p>We have also bound this increment function to our first action and a keyboard shortcut</p>
@@ -111,16 +112,18 @@ const DemoView: Component = () => {
           <div>
             <h3 class={utilStyles.stripSpace}>Conditionally enable actions</h3>
             <p>
-              The <strong>Unmute Audio</strong> action is only enabled when the muted signal has value <strong>true</strong>.
+              The <strong>Unmute Audio</strong> action is only enabled when the muted signal has value{' '}
+              <strong>true</strong>.
             </p>
             <p>
-              The action's <strong>cond</strong> & <strong>run</strong> functions can use latest application state to enable actions or change behavior.
+              The action's <strong>cond</strong> & <strong>run</strong> functions can use latest application state to
+              enable actions or change behavior.
             </p>
           </div>
           <div class={demoStyles.demoInteraction}>
             <div>
               <label
-                htmlFor="audio-mute"
+                for="audio-mute"
                 class={`${styles.muteLabel} ${demoStyles.demoInteractionDesc}`}
               >
                 <input

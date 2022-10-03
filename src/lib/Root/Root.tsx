@@ -17,9 +17,9 @@ const RootInternal: Component = () => {
 export const Root: Component<RootProps> = (props) => {
   const initialActionsContext = props.actionsContext || {};
   const visibility = atomization(props.visibility ?? false);
+  const searchText = atomization(props.searchText ?? '');
 
   const [store, setStore] = createStore<StoreState>({
-    searchText: '',
     activeParentActionIdList: [rootParentActionId],
     actionsContext: {
       root: initialActionsContext,
@@ -29,9 +29,10 @@ export const Root: Component<RootProps> = (props) => {
   });
   const actions = TransformActionsProp(props);
   const atoms: ReactiveStore = {
+    searchText,
     visibility,
     ...actions,
-    resultsList: createSearchResultList(store, actions.actions),
+    resultsList: createSearchResultList(store, actions.actions, searchText),
   };
 
   const storeMethods: StoreMethods = createStoreMethods(setStore, store, atoms);

@@ -16,7 +16,7 @@ export function createConditionalActionList(state: StoreState, actions: Atom<Act
   });
 }
 
-export function createSearchResultList(store: StoreState, actions: Atom<Action[]>) {
+export function createSearchResultList(store: StoreState, actions: Atom<Action[]>, searchText: Atom<string>) {
   const conditionalActionList = createConditionalActionList(store, actions);
 
   const fuse = new Fuse(conditionalActionList(), {
@@ -39,11 +39,11 @@ export function createSearchResultList(store: StoreState, actions: Atom<Action[]
     fuse.setCollection(conditionalActionList());
   });
   return reflect(() => {
-    if (store.searchText.length === 0) {
+    if (searchText().length === 0) {
       return conditionalActionList();
     }
 
-    const searchResults = fuse.search(store.searchText);
+    const searchResults = fuse.search(searchText());
 
     const resultsList = searchResults.map((result) => result.item);
     return resultsList;

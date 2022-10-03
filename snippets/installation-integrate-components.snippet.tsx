@@ -1,6 +1,6 @@
-import { Root, CommandPalette } from 'solid-command-palette';
+import { Root, CommandPalette } from '@cn-ui/command-palette';
 import { actions } from './actions';
-import 'solid-command-palette/pkg-dist/style.css';
+import '@cn-ui/command-palette/pkg-dist/style.css';
 
 const App = () => {
   const actionsContext = {

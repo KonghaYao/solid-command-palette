@@ -13,7 +13,7 @@ export default defineConfig({
       fileName: (format) => `solid-command-palette.${format}.js`,
     },
     rollupOptions: {
-      external: ['solid-js', 'tinykeys', 'fuse.js'],
+      external: ['solid-js', 'tinykeys', 'fuse.js', '@cn-ui/use'],
     },
   },
 });

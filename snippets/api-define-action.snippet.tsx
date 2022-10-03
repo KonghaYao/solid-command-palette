@@ -1,4 +1,4 @@
-import { defineAction } from 'solid-command-palette';
+import { defineAction } from '@cn-ui/command-palette';
 
 export const myAction = defineAction({
   /* Unique identifier for your action */

@@ -25,9 +25,9 @@ const OverviewView: Component = () => {
     <section class={docsStyles.section}>
       <h2>Overview</h2>
       <p class={docsStyles.text}>
-        Command Palette lets users perform tasks on your app with just keyboard. No need to drag the
-        mouse around. Users can fuzzy search to find the action. If the action has a keyboard
-        shortcut then they can trigger it from anywhere. This increases their productivity by 10x.
+        Command Palette lets users perform tasks on your app with just keyboard. No need to drag the mouse around. Users
+        can fuzzy search to find the action. If the action has a keyboard shortcut then they can trigger it from
+        anywhere. This increases their productivity by 10x.
       </p>
 
       <h3>Live Example</h3>
@@ -42,7 +42,7 @@ const OverviewView: Component = () => {
         </a>
       </div>
       <div class={docsStyles.embedWrapper}>
-        <div ref={exampleElem} />
+        <div ref={exampleElem!} />
       </div>
     </section>
   );
