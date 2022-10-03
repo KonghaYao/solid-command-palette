@@ -1,7 +1,6 @@
 import { onMount, onCleanup } from 'solid-js';
 import tinykeys from 'tinykeys';
 import { useStore } from './StoreContext';
-import { createActionList } from './createActionList';
 import { getShortcutHandlersMap } from './actionUtils/actionUtils';
 
 type Unsubscribe = ReturnType<typeof tinykeys>;
@@ -15,7 +14,7 @@ export function createKbdShortcuts() {
     togglePalette();
   };
 
-  const actionsList = createActionList();
+  const actionsList = state.actions;
   let unsubscribe: Unsubscribe;
   onMount(() => {
     const shortcutMap = getShortcutHandlersMap(actionsList(), state.actionsContext, storeMethods);

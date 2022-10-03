@@ -88,15 +88,15 @@ const toggleAirplaneWorkAction = defineAction({
   },
 });
 
-export const nestedActionsConfig = {
-  [setProfileAction.id]: setProfileAction,
-  [setToPersonalProfileAction.id]: setToPersonalProfileAction,
-  [setToWorkProfileAction.id]: setToWorkProfileAction,
-  [configureProfileAction.id]: configureProfileAction,
-  [configurePersonalProfileAction.id]: configurePersonalProfileAction,
-  [toggleWifiPersonalAction.id]: toggleWifiPersonalAction,
-  [toggleAirplanePersonalAction.id]: toggleAirplanePersonalAction,
-  [configureWorkProfileAction.id]: configureWorkProfileAction,
-  [toggleWifiWorkAction.id]: toggleWifiWorkAction,
-  [toggleAirplaneWorkAction.id]: toggleAirplaneWorkAction,
-};
+export const nestedActionsConfig = [
+  setProfileAction,
+  setToPersonalProfileAction,
+  setToWorkProfileAction,
+  configureProfileAction,
+  configurePersonalProfileAction,
+  toggleWifiPersonalAction,
+  toggleAirplanePersonalAction,
+  configureWorkProfileAction,
+  toggleWifiWorkAction,
+  toggleAirplaneWorkAction,
+];

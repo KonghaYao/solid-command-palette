@@ -1,14 +1,13 @@
 import { Component, createEffect, createSignal, createUniqueId, onMount, onCleanup, Setter } from 'solid-js';
 import tinykeys from 'tinykeys';
-import { useStore } from './StoreContext';
-import { KbdShortcut } from './KbdShortcut/KbdShortcut';
-import { ScrollAssist } from './ScrollAssist/ScrollAssist';
-import { PanelResult } from './Panel/Result/Result';
-import { PanelFooter } from './Panel/Footer/Footer';
-import { createSearchResultList } from './createActionList';
-import { runAction } from './actionUtils/actionUtils';
-import { WrappedAction } from './types';
-import utilStyles from './utils.module.css';
+import { useStore } from '../StoreContext';
+import { KbdShortcut } from '../KbdShortcut/KbdShortcut';
+import { ScrollAssist } from '../ScrollAssist/ScrollAssist';
+import { PanelResult } from '../Panel/Result/Result';
+import { PanelFooter } from '../Panel/Footer/Footer';
+import { runAction } from '../actionUtils/actionUtils';
+import { WrappedAction } from '../types';
+import utilStyles from '../utils.module.css';
 import styles from './CommandPalette.module.css';
 import { CommandPaletteProps, ActiveItemId, UserInteraction, InputEventHandler } from './CommandPalette';
 function triggerRun(action: WrappedAction) {
@@ -18,7 +17,7 @@ function triggerRun(action: WrappedAction) {
 export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
   const [state, storeMethods] = useStore();
   const { closePalette, setSearchText, revertParentAction } = storeMethods;
-  const resultsList = createSearchResultList();
+  const resultsList = state.resultsList;
   const [activeItemId, setActiveItemId] = createSignal<ActiveItemId>(null);
   const [userInteraction, setUserInteraction] = createSignal<UserInteraction>('idle');
   const searchLabelId = createUniqueId();
@@ -83,38 +82,6 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
     triggerRun(action);
   }
 
-  function handleKbdFirst(event: KeyboardEvent) {
-    event.preventDefault();
-
-    const actionsList = resultsList();
-    const firstAction = actionsList[0];
-
-    if (firstAction) {
-      setUserInteraction('navigate-kbd');
-      setActiveItemId(firstAction.id);
-    }
-  }
-
-  function handleKbdLast(event: KeyboardEvent) {
-    event.preventDefault();
-
-    const actionsList = resultsList();
-    const lastAction = actionsList.at(-1);
-
-    if (lastAction) {
-      setUserInteraction('navigate-kbd');
-      setActiveItemId(lastAction.id);
-    }
-  }
-
-  function handleKbdDelete() {
-    const isSearchEmpty = state.searchText.length <= 0;
-
-    if (isSearchEmpty) {
-      revertParentAction();
-    }
-  }
-
   function getScrollAssistStatus() {
     switch (userInteraction()) {
       case 'navigate-mouse':
@@ -133,7 +100,7 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
       searchInputElem.select();
     }
 
-    if (wrapperElem) BindKey(wrapperElem, handleKbdEnter, handleKbdFirst, handleKbdLast, handleKbdDelete, activateItemWith, setUserInteraction);
+    if (wrapperElem) BindKey(wrapperElem, handleKbdEnter, activateItemWith, setUserInteraction, setActiveItemId);
   });
 
   onCleanup(() => {
@@ -251,36 +218,56 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
 function BindKey(
   wrapperElem: HTMLDivElement,
   handleKbdEnter: (event: KeyboardEvent) => null | undefined,
-  handleKbdFirst: (event: KeyboardEvent) => void,
-  handleKbdLast: (event: KeyboardEvent) => void,
-  handleKbdDelete: () => void,
   activateItemWith: (len: number) => void,
-  setUserInteraction: Setter<UserInteraction>
+  setUserInteraction: Setter<UserInteraction>,
+  setActiveItemId: Setter<ActiveItemId>
 ) {
   const [state, storeMethods] = useStore();
-  const { closePalette, setSearchText, revertParentAction } = storeMethods;
+  const { closePalette, revertParentAction } = storeMethods;
 
-  function handleKbdPrev(event: KeyboardEvent) {
-    event.preventDefault();
-    setUserInteraction('navigate-kbd');
-    activateItemWith(-1);
-  }
-
-  function handleKbdNext(event: KeyboardEvent) {
-    event.preventDefault();
-    setUserInteraction('navigate-kbd');
-    activateItemWith(1);
-  }
   tinykeys(wrapperElem, {
     Escape: (event) => {
       event.preventDefault();
       closePalette();
     },
     Enter: handleKbdEnter,
-    ArrowUp: handleKbdPrev,
-    ArrowDown: handleKbdNext,
-    PageUp: handleKbdFirst,
-    PageDown: handleKbdLast,
-    Backspace: handleKbdDelete,
+    ArrowUp(event: KeyboardEvent) {
+      event.preventDefault();
+      setUserInteraction('navigate-kbd');
+      activateItemWith(-1);
+    },
+    ArrowDown(event: KeyboardEvent) {
+      event.preventDefault();
+      setUserInteraction('navigate-kbd');
+      activateItemWith(1);
+    },
+    PageUp(event: KeyboardEvent) {
+      event.preventDefault();
+
+      const actionsList = state.resultsList();
+      const firstAction = actionsList[0];
+
+      if (firstAction) {
+        setUserInteraction('navigate-kbd');
+        setActiveItemId(firstAction.id);
+      }
+    },
+    PageDown(event: KeyboardEvent) {
+      event.preventDefault();
+
+      const actionsList = state.resultsList();
+      const lastAction = actionsList.at(-1);
+
+      if (lastAction) {
+        setUserInteraction('navigate-kbd');
+        setActiveItemId(lastAction.id);
+      }
+    },
+    Backspace() {
+      const isSearchEmpty = state.searchText.length <= 0;
+      if (isSearchEmpty) {
+        revertParentAction();
+      }
+    },
   });
 }

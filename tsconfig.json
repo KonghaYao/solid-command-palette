@@ -12,6 +12,6 @@
     "declaration": true,
     "outDir": "pkg-dist/types"
   },
-  "include": ["./src"],
-  "exclude": ["./src/app", "./src/**/*.test.*"]
+  "include": ["./src", "./src/app"],
+  "exclude": ["./src/**/*.test.*"]
 }

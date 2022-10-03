@@ -49,19 +49,8 @@ const navigationAction = defineAction({
   keywords: ['oss', 'source', 'code'],
   shortcut: 'g h',
   run: () => {
-    window.open(
-      'https://github.com/itaditya/solid-command-palette',
-      '_blank',
-      'noopener noreferrer'
-    );
+    window.open('https://github.com/itaditya/solid-command-palette', '_blank', 'noopener noreferrer');
   },
 });
 
-export const actions = {
-  [incrementCounterAction.id]: incrementCounterAction,
-  [loggerAction.id]: loggerAction,
-  [unmuteAudioAction.id]: unmuteAudioAction,
-  ...nestedActionsConfig,
-  [contactAction.id]: contactAction,
-  [navigationAction.id]: navigationAction,
-};
+export const actions = [incrementCounterAction, loggerAction, unmuteAudioAction, ...nestedActionsConfig, contactAction, navigationAction];

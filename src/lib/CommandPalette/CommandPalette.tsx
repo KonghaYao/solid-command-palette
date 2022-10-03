@@ -1,8 +1,8 @@
 import { Component, JSX, Show } from 'solid-js';
 import { Transition } from 'solid-transition-group';
-import { useStore } from './StoreContext';
+import { useStore } from '../StoreContext';
 import { CommandPalettePortal } from './CommandPalettePortal';
-import { ActionId } from './types';
+import { ActionId } from '../types';
 import styles from './CommandPalette.module.css';
 import { CommandPaletteInternal } from './CommandPaletteInternal';
 

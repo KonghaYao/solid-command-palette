@@ -58,7 +58,7 @@ export interface Components {
 }
 
 export interface RootProps {
-  actions: Action[] | Atom<Action[]>;
+  actions: Atom<Action[]> | Atom<Actions> | Action[] | Actions;
   actionsContext: ActionContext;
   components?: Components;
   visibility?: Atom<boolean>;
@@ -69,6 +69,8 @@ export interface StoreState {
   searchText: string;
   activeParentActionIdList: Array<ActionId>;
   actions: Atom<Action[]>;
+  resultsList: Atom<Action[]>;
+
   actionsMap: Atom<Actions>;
   actionsContext: ActionsContext;
   components?: Components;
