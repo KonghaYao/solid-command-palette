@@ -89,7 +89,7 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
 
     lastFocusedElem = null;
   });
-
+  const Main = state.components?.Main;
   return (
     <div
       class={styles.wrapper}
@@ -175,6 +175,7 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
               />
             </button>
           </form>
+          {Main && <Main></Main>}
           <PanelResult
             activeItemId={activeItemId()}
             resultsList={atoms.resultsList()}

@@ -60,6 +60,7 @@ export interface ResultContentProps {
 export interface Components {
   ResultContent?: Component<ResultContentProps>;
   ResultIcon?: Component<{ action: Action }>;
+  Main?: Component;
 }
 
 export interface RootProps {
