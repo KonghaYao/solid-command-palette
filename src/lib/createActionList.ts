@@ -1,25 +1,40 @@
 import { createMemo, createEffect } from 'solid-js';
 import Fuse from 'fuse.js';
 import { checkActionAllowed, getActiveParentAction } from './actionUtils/actionUtils';
-import { Action, ReactiveStore, StoreState, WrappedAction } from './types';
+import { Action, ActionFilter, ReactiveStore, StoreState, WrappedAction } from './types';
 import { reflect } from '@cn-ui/use';
 import { Atom } from 'solid-use';
 
-export function createConditionalActionList(state: StoreState, actions: Atom<Action[]>) {
+export function createConditionalActionList(state: StoreState, actions: Atom<Action[]>, filters: Atom<ActionFilter[]>) {
+  const baseFilters = [
+    (action: WrappedAction) => {
+      const { activeId, isRoot } = getActiveParentAction(state.activeParentActionIdList);
+      return isRoot || action.parentActionId === activeId;
+    },
+    (action) => checkActionAllowed(action, state.actionsContext),
+  ] as ActionFilter[];
+
+  const combineFilter = reflect(() => baseFilters.concat(filters()));
+
   return createMemo(() => {
-    return actions()
-      .filter((action: WrappedAction) => {
-        const { activeId, isRoot } = getActiveParentAction(state.activeParentActionIdList);
-        return isRoot || action.parentActionId === activeId;
-      })
-      .filter((action) => checkActionAllowed(action, state.actionsContext));
+    let items = actions();
+    return combineFilter().reduce((items, it) => {
+      return items.filter(it);
+    }, items);
   });
 }
 
-export function createSearchResultList(store: StoreState, actions: Atom<Action[]>, searchText: Atom<string>) {
-  const conditionalActionList = createConditionalActionList(store, actions);
+export function createSearchResultList(
+  store: StoreState,
+  actions: Atom<Action[]>,
+  searchText: Atom<string>,
+  filters: Atom<ActionFilter[]>
+) {
+  const conditionalActionList = createConditionalActionList(store, actions, filters);
 
+  console.log('创建 fuse');
   const fuse = new Fuse(conditionalActionList(), {
+    ...(store?.fuseOptions || {}),
     keys: [
       {
         name: 'title',

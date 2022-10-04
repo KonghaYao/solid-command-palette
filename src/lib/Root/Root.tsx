@@ -18,6 +18,7 @@ export const Root: Component<RootProps> = (props) => {
   const initialActionsContext = props.actionsContext || {};
   const visibility = atomization(props.visibility ?? false);
   const searchText = atomization(props.searchText ?? '');
+  const filters = atomization(props.filters ?? []);
 
   const [store, setStore] = createStore<StoreState>({
     activeParentActionIdList: [rootParentActionId],
@@ -31,8 +32,9 @@ export const Root: Component<RootProps> = (props) => {
   const atoms: ReactiveStore = {
     searchText,
     visibility,
+    filters,
     ...actions,
-    resultsList: createSearchResultList(store, actions.actions, searchText),
+    resultsList: createSearchResultList(store, actions.actions, searchText, filters),
   };
 
   const storeMethods: StoreMethods = createStoreMethods(setStore, store, atoms);

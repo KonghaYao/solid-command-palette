@@ -41,8 +41,10 @@ export function runAction(action: WrappedAction, actionsContext: ActionsContext,
   }
 
   const { rootContext, dynamicContext } = getActionContext(action, actionsContext);
-  run({ actionId: id, rootContext, dynamicContext });
-  storeMethods.closePalette();
+  const result = run({ actionId: id, rootContext, dynamicContext });
+  if (result !== true) {
+    storeMethods.closePalette();
+  }
 }
 
 export function getShortcutHandlersMap(

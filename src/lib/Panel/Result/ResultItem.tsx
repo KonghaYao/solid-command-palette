@@ -47,6 +47,7 @@ export const ResultItem: Component<ResultItemProps> = (p) => {
         component={ResultContentComponent}
         isActive={isActive()}
         action={p.action}
+        icon={state.components?.ResultIcon}
       />
     </li>
   );

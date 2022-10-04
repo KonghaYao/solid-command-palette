@@ -35,7 +35,10 @@ export interface Action {
    * Enable the action conditionally.
    */
   cond?: (args: RunArgs) => boolean;
-  run?: (args: RunArgs) => void;
+  /**
+   * @zh 当返回 true 时，将不会关闭面板
+   */
+  run?: (args: RunArgs) => void | true;
 }
 
 export type PartialAction = Partial<Action> & {
@@ -51,10 +54,12 @@ export type WrappedActionList = Array<WrappedAction>;
 export interface ResultContentProps {
   action: WrappedAction;
   isActive: boolean;
+  icon?: Component<{ action: Action }>;
 }
 
 export interface Components {
-  ResultContent: Component<ResultContentProps>;
+  ResultContent?: Component<ResultContentProps>;
+  ResultIcon?: Component<{ action: Action }>;
 }
 
 export interface RootProps {
@@ -63,15 +68,19 @@ export interface RootProps {
   components?: Components;
   visibility?: boolean | Atom<boolean>;
   searchText?: string | Atom<string>;
+  filters?: ActionFilter[] | Atom<ActionFilter[]>;
   children?: JSXElement;
 }
-
+import Fuse from 'fuse.js';
+export type ActionFilter = (action: Action) => boolean;
 export interface StoreState {
   activeParentActionIdList: Array<ActionId>;
   actionsContext: ActionsContext;
   components?: Components;
+  fuseOptions?: Fuse.IFuseOptions<Action>;
 }
 export type ReactiveStore = {
+  filters: Atom<ActionFilter[]>;
   searchText: Atom<string>;
   visibility: Atom<boolean>;
   actions: Atom<Action[]>;
