@@ -16,7 +16,10 @@ export const PanelResult: Component<PanelResultProps> = (p) => {
         <For
           each={p.resultsList}
           fallback={
-            <div class={styles.resultItem}>
+            <div
+              class={styles.resultItem}
+              style="padding:2em"
+            >
               <h4 class={`${styles.resultTitle} ${utilStyles.stripSpace}`}>Couldn't find any matching actions</h4>
             </div>
           }

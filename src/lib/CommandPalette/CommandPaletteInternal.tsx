@@ -94,7 +94,10 @@ export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
     <div
       class={styles.wrapper}
       ref={wrapperElem}
-      onClick={() => closePalette()}
+      onClick={(e) => {
+        // 点击遮罩关闭
+        e.target === wrapperElem && closePalette();
+      }}
     >
       <div class={styles.palette}>
         <ScrollAssist
