@@ -25,7 +25,7 @@ export function checkActionAllowed(action: WrappedAction, actionsContext: Action
     return true;
   }
   const { rootContext, dynamicContext } = getActionContext(action, actionsContext);
-  return action.cond({ actionId: action.id, rootContext, dynamicContext });
+  return action.cond({ actionId: action.id, rootContext, dynamicContext, action });
 }
 
 /**
@@ -41,7 +41,7 @@ export function runAction(action: WrappedAction, actionsContext: ActionsContext,
   }
 
   const { rootContext, dynamicContext } = getActionContext(action, actionsContext);
-  const result = run({ actionId: id, rootContext, dynamicContext });
+  const result = run({ actionId: id, rootContext, dynamicContext, action });
   if (result !== true) {
     storeMethods.closePalette();
   }

@@ -19,6 +19,7 @@ export interface RunArgs {
   actionId: ActionId;
   rootContext: ActionContext;
   dynamicContext: ActionContext;
+  action: WrappedAction;
 }
 
 export interface Action {
