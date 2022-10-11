@@ -14,7 +14,7 @@ const RootInternal: Component = () => {
   return null;
 };
 
-export const Root: Component<RootProps> = (props) => {
+export const PaletteRoot: Component<RootProps> = (props) => {
   const initialActionsContext = props.actionsContext || {};
   const visibility = atomization(props.visibility ?? false);
   const searchText = atomization(props.searchText ?? '');

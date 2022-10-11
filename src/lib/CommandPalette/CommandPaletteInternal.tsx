@@ -10,7 +10,7 @@ import utilStyles from '../utils.module.css';
 import styles from './CommandPalette.module.css';
 import { CommandPaletteProps, ActiveItemId, UserInteraction } from './CommandPalette';
 import { BindCommandKey } from './BindCommandKey';
-import { atom } from 'solid-use';
+import { atom } from '@cn-ui/use';
 
 export const CommandPaletteInternal: Component<CommandPaletteProps> = (p) => {
   const [state, storeMethods, atoms] = useStore();

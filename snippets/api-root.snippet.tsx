@@ -1,6 +1,6 @@
-import { Root } from '@cn-ui/command-palette';
+import { PaletteRoot } from '@cn-ui/command-palette';
 
-<Root
+<PaletteRoot
   /* map of all actions */
   actions={{
     [myAction.id]: myAction,

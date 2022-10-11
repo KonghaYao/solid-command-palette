@@ -68,11 +68,6 @@ const incrementCounterAction = defineAction({
   },
 });
 
-export const actions = {
-  [minimalAction.id]: minimalAction,
-  [incrementCounterAction.id]: incrementCounterAction,
-};
-
 // If you are lazy to write id, then just give an array!
 export const actions = [minimalAction, incrementCounterAction];
 ```
@@ -80,7 +75,8 @@ export const actions = [minimalAction, incrementCounterAction];
 ```jsx
 // render inside top level Solid component
 
-import { Root, CommandPalette } from '@cn-ui/command-palette';
+// Not Root again, because it make Other Components Confuse!
+import { PaletteRoot, CommandPalette } from '@cn-ui/command-palette';
 import { atom } from '@cn-ui/use';
 import { actions } from './actions';
 import '@cn-ui/command-palette/pkg-dist/style.css';
@@ -95,12 +91,12 @@ const App = () => {
 
   return (
     <div class="my-app">
-      <Root
+      <PaletteRoot
         actions={actionController} // or you can just put actions to there without reactive
         actionsContext={actionsContext}
       >
         <CommandPalette />
-      </Root>
+      </PaletteRoot>
     </div>
   );
 };

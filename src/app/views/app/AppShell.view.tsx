@@ -1,6 +1,6 @@
 import { Component, Show } from 'solid-js';
 import { Link, NavLink, NavLinkProps, Outlet, useMatch, useNavigate } from '@solidjs/router';
-import { Root, CommandPalette } from '../../../lib';
+import { PaletteRoot, CommandPalette } from '../../../lib';
 import { SocialIcon, socialsData } from './SocialIcons';
 import { actions } from './actions';
 import utilStyles from '../../utils.module.css';
@@ -32,13 +32,13 @@ const Main: Component = () => {
         when={!isDemo()}
         fallback={<Outlet />}
       >
-        <Root
+        <PaletteRoot
           actions={actions}
           actionsContext={actionsContext}
         >
           <CommandPalette />
           <Outlet />
-        </Root>
+        </PaletteRoot>
       </Show>
     </main>
   );
@@ -102,7 +102,7 @@ const AppShellView: Component = () => {
         >
           Aditya Agarwal
         </a>
-        <span>Refractor by</span>
+        |<span>Refractor by</span>
         <a
           class={styles.creditLink}
           href="https://github.com/KonghaYao"

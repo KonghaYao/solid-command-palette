@@ -1,6 +1,6 @@
 import { Component, createSignal, Show } from 'solid-js';
 import { useSearchParams } from '@solidjs/router';
-import { Root, CommandPalette, KbdShortcut } from '../../../lib';
+import { PaletteRoot, CommandPalette, KbdShortcut } from '../../../lib';
 import { actions } from './actions';
 import { NestedActionDemo } from './NestedActionDemo/NestedActionDemo';
 import { DynamicActionContextDemo } from './DynamicActionContextDemo/DynamicActionContextDemo';
@@ -62,7 +62,7 @@ const DemoView: Component = () => {
   const customProps = getCustomProps();
 
   return (
-    <Root
+    <PaletteRoot
       actions={actions}
       actionsContext={actionsContext}
       components={customProps.components}
@@ -157,7 +157,7 @@ const DemoView: Component = () => {
         />
         <DynamicActionContextDemo />
       </div>
-    </Root>
+    </PaletteRoot>
   );
 };
 
