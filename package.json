@@ -27,7 +27,7 @@
     "gen:types": "tsc --emitDeclarationOnly",
     "gen:lib": "vite build -c vite-pkg.config.ts",
     "gen:snippets": "ts-node -P tsconfig-node.json ./scripts/generateSnippets.ts",
-    "prepublishOnly": "npm run gen:lib && npm run gen:types"
+    "prepublishOnly": "npm run gen:types&&npm run gen:lib "
   },
   "license": "MIT",
   "devDependencies": {
