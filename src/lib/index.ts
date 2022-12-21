@@ -5,3 +5,4 @@ export * from './createSyncActionsContext';
 export * from './defineAction';
 export * from './useControls';
 export * from './types';
+export * from './useKeyWordsFilter';
